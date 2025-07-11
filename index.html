@@ -37,9 +37,8 @@
       flex: 1;
     }
 
-    /* کادر راهنما */
     .guide-box {
-      background-color: rgba(255 255 255 / 1); /* سفید کامل */
+      background-color: rgba(255 255 255 / 1);
       border-radius: 10px;
       border: 1px solid #ccc;
       padding: 20px;
@@ -57,11 +56,7 @@
       align-items: center;
       gap: 8px;
     }
-    .guide-box > .title span.emoji {
-      font-size: 24px;
-    }
 
-    /* هر کادر داخل راهنما */
     .info-box {
       background-color: #f1f5f9;
       border-radius: 8px;
@@ -75,7 +70,7 @@
       align-items: center;
     }
     .info-box .name {
-      text-align: left; /* چپ */
+      text-align: left;
       flex: 1;
       color: #222;
       padding-left: 10px;
@@ -83,7 +78,7 @@
     .info-box .size {
       text-align: center;
       flex: 1;
-      background-color: #014d60; /* آبی نفتی */
+      background-color: #014d60;
       color: white;
       font-family: monospace;
       letter-spacing: 1px;
@@ -112,9 +107,9 @@
       color: white;
       font-size: 18px;
       font-family: 'Shabnam';
+      box-sizing: border-box;
     }
 
-    /* حذف فلش‌ها در input type=number */
     input[type=number]::-webkit-inner-spin-button, 
     input[type=number]::-webkit-outer-spin-button { 
       -webkit-appearance: none; 
@@ -126,20 +121,29 @@
     }
 
     button {
-      width: 100%;
       background-color: #093d43;
       color: #fff;
       border: none;
       padding: 12px;
       font-size: 16px;
       border-radius: 10px;
-      margin-top: 10px;
       cursor: pointer;
       font-family: 'Shabnam';
+      box-sizing: border-box;
+      user-select: none;
+      transition: background-color 0.3s ease;
     }
 
     button:hover {
       background-color: #0b484b;
+    }
+
+    #resetBtn {
+      background-color: #e6f0f3;
+      color: #222;
+    }
+    #resetBtn:hover {
+      background-color: #d0e4eb;
     }
 
     #result {
@@ -151,7 +155,25 @@
       white-space: pre-line;
       color: white;
       font-family: 'Shabnam';
+      min-height: 1.5em;
+      box-sizing: border-box;
     }
+
+    /* تغییر این قسمت برای دکمه‌ها */
+    .button-group {
+      display: flex;
+      gap: 10px;
+      margin-top: 10px;
+    }
+    #calculateBtn {
+      flex: 7; /* 70% */
+      width: auto;
+    }
+    #resetBtn {
+      flex: 3; /* 30% */
+      width: auto;
+    }
+
   </style>
 </head>
 <body>
@@ -160,10 +182,10 @@
     <!-- Right: Inputs -->
     <div class="right">
       <label>طول ورق (cm)</label>
-      <input type="number" id="sheetLength" />
+      <input type="number" id="sheetLength" inputmode="numeric" />
 
       <label>عرض ورق (cm)</label>
-      <input type="number" id="sheetWidth" />
+      <input type="number" id="sheetWidth" inputmode="numeric" />
 
       <label>طول پرت (cm)</label>
       <input type="number" id="extremeLength" />
@@ -174,7 +196,10 @@
       <label>قیمت ورق کامل (تومان)</label>
       <input type="text" id="price" />
 
-      <button onclick="calculateOnly()">محاسبه</button>
+      <div class="button-group">
+        <button id="calculateBtn" type="button">محاسبه</button>
+        <button id="resetBtn" type="button">ریست</button>
+      </div>
 
       <div id="result"></div>
     </div>
@@ -183,11 +208,11 @@
     <div class="left">
       <label>راهنما</label>
       <div class="guide-box">
-        <div class="title"><span class="emoji"></span>ابعاد استاندارد ورقه ها :</div>
+        <div class="title">ابعاد استاندارد ورقه ها :</div>
 
         <div class="info-box"><span class="name">MDF/MEL</span><span class="size">366-183</span></div>
         <div class="info-box"><span class="name">MDF/MEL</span><span class="size">366-210</span></div>
-        <div class="info-box"><span class="name">MDF/MEL</span><span class="size">280-210</span></div>
+        <div class="info-box"><span class="name">280-210</span><span class="size">MDF/MEL</span></div>
         <div class="info-box"><span class="name">3mil</span><span class="size">244-183</span></div>
         <div class="info-box"><span class="name">Fomize</span><span class="size">244-122</span></div>
         <div class="info-box"><span class="name">Fomize 3mil</span><span class="size">244-122</span></div>
@@ -197,7 +222,17 @@
   </div>
 
   <script>
-    // جداکننده سه‌رقمی در قیمت
+    const inputs = document.querySelectorAll('.right input');
+    const calculateBtn = document.getElementById('calculateBtn');
+    const resetBtn = document.getElementById('resetBtn');
+    const resultDiv = document.getElementById('result');
+
+    // فوکوس اولیه روی اولین فیلد
+    window.onload = function () {
+      inputs[0].focus();
+    }
+
+    // جداکننده قیمت
     document.getElementById('price').addEventListener('input', function (e) {
       let value = e.target.value.replace(/,/g, '').replace(/[^\d]/g, '');
       if (value) {
@@ -207,27 +242,32 @@
       }
     });
 
-    // حرکت با Enter بین inputها
-    const inputs = document.querySelectorAll('.right input');
+    // جلوگیری از حرکت به فیلد بعدی با Enter اگر فیلد خالی باشد و نمایش هشدار
     inputs.forEach((input, idx) => {
       input.addEventListener('keydown', function(e) {
         if (e.key === 'Enter') {
           e.preventDefault();
+          if (input.value.trim() === '') {
+            alert("لطفاً این فیلد را پر کنید.");
+            input.focus();
+            return;
+          }
           const nextInput = inputs[idx + 1];
           if (nextInput) {
             nextInput.focus();
           } else {
-            document.querySelector('button').focus();
+            calculateBtn.focus();
           }
         }
       });
     });
 
+    // محاسبه
     function calculateOnly() {
-      const sheetL = parseFloat(document.getElementById('sheetLength').value);
-      const sheetW = parseFloat(document.getElementById('sheetWidth').value);
-      const extL = parseFloat(document.getElementById('extremeLength').value);
-      const extW = parseFloat(document.getElementById('extremeWidth').value);
+      let sheetL = parseFloat(document.getElementById('sheetLength').value);
+      let sheetW = parseFloat(document.getElementById('sheetWidth').value);
+      let extL = parseFloat(document.getElementById('extremeLength').value);
+      let extW = parseFloat(document.getElementById('extremeWidth').value);
       const priceStr = document.getElementById('price').value.replace(/,/g, '');
       const price = parseFloat(priceStr);
 
@@ -239,19 +279,84 @@
         return;
       }
 
+      // بررسی ابعاد پرت در برابر ورق
       if (extL > sheetL || extW > sheetW) {
-        alert("ابعاد پرت نباید از ابعاد ورق بیشتر باشند.");
-        return;
+        // امتحان با جابه‌جایی طول و عرض پرت
+        const temp = extL;
+        extL = extW;
+        extW = temp;
+
+        if (extL > sheetL || extW > sheetW) {
+          alert("ابعاد پرت نباید از ابعاد ورق بیشتر باشند. لطفاً اصلاح کنید.");
+          return;
+        }
       }
 
       const totalArea = sheetL * sheetW;
       const extremeArea = extL * extW;
       const remain = extremeArea / totalArea;
-      const cost = Math.round((remain * price) / 1000) * 1000; // گرد به هزارگان
+      const cost = Math.round((remain * price) / 1000) * 1000;
 
-      document.getElementById('result').innerText =
+      resultDiv.innerText =
         `قیمت پرت:  ${cost.toLocaleString()} تومان`;
     }
+
+    // کلیک روی محاسبه
+    calculateBtn.addEventListener('click', () => {
+      for (const input of inputs) {
+        if (input.value.trim() === '') {
+          alert("لطفاً همه فیلدها را پر کنید.");
+          input.focus();
+          return;
+        }
+      }
+      calculateOnly();
+      resetBtn.focus();
+    });
+
+    // کلید Enter روی دکمه محاسبه
+    calculateBtn.addEventListener('keydown', function (e) {
+      if (e.key === 'Enter') {
+        e.preventDefault();
+        for (const input of inputs) {
+          if (input.value.trim() === '') {
+            alert("لطفاً همه فیلدها را پر کنید.");
+            input.focus();
+            return;
+          }
+        }
+        calculateOnly();
+        resetBtn.focus();
+      }
+    });
+
+    // تابع ریست کردن فیلدها
+    function resetFields() {
+      inputs.forEach(input => input.value = '');
+      resultDiv.innerText = '';
+    }
+
+    // کلیک روی ریست
+    resetBtn.addEventListener('click', () => {
+      const confirmed = confirm("آیا مطمئن هستید که می‌خواهید همه فیلدها پاک شوند؟");
+      if (confirmed) {
+        resetFields();
+        inputs[0].focus();
+      }
+    });
+
+    // کلید Enter روی دکمه ریست
+    resetBtn.addEventListener('keydown', function (e) {
+      if (e.key === 'Enter') {
+        e.preventDefault();
+        const confirmed = confirm("آیا مطمئن هستید که می‌خواهید همه فیلدها پاک شوند؟");
+        if (confirmed) {
+          resetFields();
+          inputs[0].focus();
+        }
+      }
+    });
+
   </script>
 
 </body>
