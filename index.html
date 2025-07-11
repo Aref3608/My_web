@@ -1,11 +1,258 @@
 <!DOCTYPE html>
 <html lang="fa">
 <head>
-  <meta charset="UTF-8">
-  <title>سایت من</title>
+  <meta charset="UTF-8" />
+  <title>Wood Sheet Calculator</title>
+  <style>
+    @font-face {
+      font-family: 'Shabnam';
+      src: url('https://cdn.jsdelivr.net/gh/rastikerdar/shabnam-font@v5.0.1/font/woff2/Shabnam.woff2') format('woff2');
+    }
+
+    body {
+      margin: 0;
+      font-family: 'Shabnam', sans-serif;
+      background: url('back_ground.jpg') no-repeat center center fixed;
+      background-size: cover;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      direction: rtl;
+    }
+
+    .container {
+      background: rgba(18, 61, 70, 0.8);
+      border-radius: 20px;
+      box-shadow: 0 20px 30px rgba(0, 0, 0, 0.3);
+      display: flex;
+      padding: 30px;
+      width: 90%;
+      max-width: 900px;
+      gap: 30px;
+      color: #fff;
+    }
+
+    .left, .right {
+      flex: 1;
+    }
+
+    /* کادر راهنما */
+    .guide-box {
+      background-color: rgba(255 255 255 / 1); /* سفید کامل */
+      border-radius: 10px;
+      border: 1px solid #ccc;
+      padding: 20px;
+      color: black;
+      font-weight: bold;
+      font-size: 15px;
+      line-height: 2;
+      user-select: none;
+    }
+
+    .guide-box > .title {
+      font-size: 20px;
+      margin-bottom: 12px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .guide-box > .title span.emoji {
+      font-size: 24px;
+    }
+
+    /* هر کادر داخل راهنما */
+    .info-box {
+      background-color: #f1f5f9;
+      border-radius: 8px;
+      padding: 10px 15px;
+      margin-top: 8px;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+      display: flex;
+      justify-content: space-between;
+      font-weight: 600;
+      font-family: 'Shabnam', sans-serif;
+      align-items: center;
+    }
+    .info-box .name {
+      text-align: left; /* چپ */
+      flex: 1;
+      color: #222;
+      padding-left: 10px;
+    }
+    .info-box .size {
+      text-align: center;
+      flex: 1;
+      background-color: #014d60; /* آبی نفتی */
+      color: white;
+      font-family: monospace;
+      letter-spacing: 1px;
+      border-radius: 6px;
+      padding: 6px 12px;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.3);
+      user-select: text;
+    }
+
+    label {
+      font-weight: bold;
+      display: block;
+      margin-bottom: 9px;
+      margin-top: 10px;
+      font-family: 'Shabnam';
+      text-align: right;
+    }
+
+    input {
+      width: 100%;
+      padding: 10px;
+      border-radius: 8px;
+      border: 1px solid #ccc;
+      margin-bottom: 10px;
+      background-color: rgba(255, 255, 255, 0.1);
+      color: white;
+      font-size: 18px;
+      font-family: 'Shabnam';
+    }
+
+    /* حذف فلش‌ها در input type=number */
+    input[type=number]::-webkit-inner-spin-button, 
+    input[type=number]::-webkit-outer-spin-button { 
+      -webkit-appearance: none; 
+      margin: 0; 
+    }
+
+    input[type=number] {
+      -moz-appearance: textfield;
+    }
+
+    button {
+      width: 100%;
+      background-color: #093d43;
+      color: #fff;
+      border: none;
+      padding: 12px;
+      font-size: 16px;
+      border-radius: 10px;
+      margin-top: 10px;
+      cursor: pointer;
+      font-family: 'Shabnam';
+    }
+
+    button:hover {
+      background-color: #0b484b;
+    }
+
+    #result {
+      margin-top: 15px;
+      background: rgba(255, 255, 255, 0.1);
+      padding: 10px;
+      border-radius: 10px;
+      font-weight: bold;
+      white-space: pre-line;
+      color: white;
+      font-family: 'Shabnam';
+    }
+  </style>
 </head>
 <body>
-  <h1>سلام دنیا!</h1>
-  <p>این اولین سایت من روی GitHub Pages هست.</p>
+
+  <div class="container">
+    <!-- Right: Inputs -->
+    <div class="right">
+      <label>طول ورق (cm)</label>
+      <input type="number" id="sheetLength" />
+
+      <label>عرض ورق (cm)</label>
+      <input type="number" id="sheetWidth" />
+
+      <label>طول پرت (cm)</label>
+      <input type="number" id="extremeLength" />
+
+      <label>عرض پرت (cm)</label>
+      <input type="number" id="extremeWidth" />
+
+      <label>قیمت ورق کامل (تومان)</label>
+      <input type="text" id="price" />
+
+      <button onclick="calculateOnly()">محاسبه</button>
+
+      <div id="result"></div>
+    </div>
+
+    <!-- Left: Guide Box -->
+    <div class="left">
+      <label>راهنما</label>
+      <div class="guide-box">
+        <div class="title"><span class="emoji"></span>ابعاد استاندارد ورقه ها :</div>
+
+        <div class="info-box"><span class="name">MDF/MEL</span><span class="size">366-183</span></div>
+        <div class="info-box"><span class="name">MDF/MEL</span><span class="size">366-210</span></div>
+        <div class="info-box"><span class="name">MDF/MEL</span><span class="size">280-210</span></div>
+        <div class="info-box"><span class="name">3mil</span><span class="size">244-183</span></div>
+        <div class="info-box"><span class="name">Fomize</span><span class="size">244-122</span></div>
+        <div class="info-box"><span class="name">Fomize 3mil</span><span class="size">244-122</span></div>
+        <div class="info-box"><span class="name">Hi glass</span><span class="size">280-122</span></div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // جداکننده سه‌رقمی در قیمت
+    document.getElementById('price').addEventListener('input', function (e) {
+      let value = e.target.value.replace(/,/g, '').replace(/[^\d]/g, '');
+      if (value) {
+        e.target.value = parseInt(value).toLocaleString('en-US');
+      } else {
+        e.target.value = '';
+      }
+    });
+
+    // حرکت با Enter بین inputها
+    const inputs = document.querySelectorAll('.right input');
+    inputs.forEach((input, idx) => {
+      input.addEventListener('keydown', function(e) {
+        if (e.key === 'Enter') {
+          e.preventDefault();
+          const nextInput = inputs[idx + 1];
+          if (nextInput) {
+            nextInput.focus();
+          } else {
+            document.querySelector('button').focus();
+          }
+        }
+      });
+    });
+
+    function calculateOnly() {
+      const sheetL = parseFloat(document.getElementById('sheetLength').value);
+      const sheetW = parseFloat(document.getElementById('sheetWidth').value);
+      const extL = parseFloat(document.getElementById('extremeLength').value);
+      const extW = parseFloat(document.getElementById('extremeWidth').value);
+      const priceStr = document.getElementById('price').value.replace(/,/g, '');
+      const price = parseFloat(priceStr);
+
+      if (
+        isNaN(sheetL) || isNaN(sheetW) ||
+        isNaN(extL) || isNaN(extW) || isNaN(price)
+      ) {
+        alert("لطفاً همه فیلدها را به‌درستی وارد کنید.");
+        return;
+      }
+
+      if (extL > sheetL || extW > sheetW) {
+        alert("ابعاد پرت نباید از ابعاد ورق بیشتر باشند.");
+        return;
+      }
+
+      const totalArea = sheetL * sheetW;
+      const extremeArea = extL * extW;
+      const remain = extremeArea / totalArea;
+      const cost = Math.round((remain * price) / 1000) * 1000; // گرد به هزارگان
+
+      document.getElementById('result').innerText =
+        `قیمت پرت:  ${cost.toLocaleString()} تومان`;
+    }
+  </script>
+
 </body>
 </html>
