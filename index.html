@@ -4,10 +4,10 @@
   <meta charset="UTF-8" />
   <title>Wood Sheet Calculator</title>
   <style>
-        @font-face {
-      font-family: 'Shabnam';
-      src: url('fonts/Shabnam.woff2') format('woff2');
-    }
+    @font-face {
+  font-family: 'Shabnam';
+  src: url('fonts/Shabnam.woff2') format('woff2');
+}
 
     body {
       margin: 0;
@@ -116,9 +116,12 @@
       margin: 0; 
     }
 
-    input[type=number] {
-      -moz-appearance: textfield;
-    }
+  input[type=number] {
+    appearance: textfield;
+    -moz-appearance: textfield;
+    -webkit-appearance: none;
+  }
+
 
     button {
       background-color: #093d43;
@@ -174,9 +177,21 @@
       width: auto;
     }
 
+  .logo {
+  position: fixed;
+  top: 20px;
+  left: 20px;
+  width: 140px;
+  height: auto;
+  z-index: 1000;
+}
+
+
   </style>
 </head>
 <body>
+  <img src="logo.png" alt="لوگو" class="logo">
+
 
   <div class="container">
     <!-- Right: Inputs -->
@@ -212,7 +227,7 @@
 
         <div class="info-box"><span class="name">MDF/MEL</span><span class="size">366-183</span></div>
         <div class="info-box"><span class="name">MDF/MEL</span><span class="size">366-210</span></div>
-        <div class="info-box"><span class="name">MDF/MEL</span><span class="size">280-210</span></div>
+        <div class="info-box"><span class="name">280-210</span><span class="size">MDF/MEL</span></div>
         <div class="info-box"><span class="name">3mil</span><span class="size">244-183</span></div>
         <div class="info-box"><span class="name">Fomize</span><span class="size">244-122</span></div>
         <div class="info-box"><span class="name">Fomize 3mil</span><span class="size">244-122</span></div>
